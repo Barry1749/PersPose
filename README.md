@@ -3,10 +3,10 @@
 
 <h4 align="center">
   <a href="https://arxiv.org/abs/2508.17239" target="_blank">[arXiv]</a> /
-
-[//]: # (  <a href="" target="_blank">[paper]</a> /)
-
-[//]: # (  <a href="" target="_blank">[video]</a>)
+  <a href="https://openaccess.thecvf.com/content/ICCV2025/html/Hao_PersPose_3D_Human_Pose_Estimation_with_Perspective_Encoding_and_Perspective_ICCV_2025_paper.html" target="_blank">[paper]</a> /
+  <a href="https://www.youtube.com/watch?v=TVnn5EOHRE0" target="_blank">[video]</a> /
+  <a href="./demo/PersPose-slide.pdf" target="_blank">[slides]</a>
+  <a href="./demo/PersPose-poster.pdf" target="_blank">[poster]</a>
 </h4>
 
 
@@ -119,10 +119,12 @@ Cite as below if you find this repository helpful:
 
 ```bibtex
 @InProceedings{PersPose_2025_ICCV,
-    title     = {PersPose: 3D Human Pose Estimation with Perspective Encoding and Perspective Rotation},
     author    = {Hao, Xiaoyang and Li, Han},
+    title     = {PersPose: 3D Human Pose Estimation with Perspective Encoding and Perspective Rotation},
     booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
     year      = {2025},
+    pages     = {8110-8119}
 }
 ```
 
