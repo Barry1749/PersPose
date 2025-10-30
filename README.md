@@ -5,7 +5,7 @@
   <a href="https://arxiv.org/abs/2508.17239" target="_blank">[arXiv]</a> /
   <a href="https://openaccess.thecvf.com/content/ICCV2025/html/Hao_PersPose_3D_Human_Pose_Estimation_with_Perspective_Encoding_and_Perspective_ICCV_2025_paper.html" target="_blank">[paper]</a> /
   <a href="https://www.youtube.com/watch?v=TVnn5EOHRE0" target="_blank">[video]</a> /
-  <a href="./demo/PersPose-slide.pdf" target="_blank">[slides]</a>
+  <a href="./demo/PersPose-slide.pdf" target="_blank">[slides]</a> /
   <a href="./demo/PersPose-poster.pdf" target="_blank">[poster]</a>
 </h4>
 
