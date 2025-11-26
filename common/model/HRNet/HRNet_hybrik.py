@@ -506,7 +506,7 @@ class PoseHighResolutionNet(nn.Module):
         x = self.relu(x)
         x = self.layer1(x)
         if cam_info is not None:
-            x = x + cam_info
+            x = x + cam_info # 可以改成 gated fusion 之類的
 
         x_list = []
         for i in range(self.stage2_cfg['NUM_BRANCHES']):

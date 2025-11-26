@@ -28,6 +28,8 @@ class PersPose(nn.Module):
                                   depth_dim=64, generate_feat=True, generate_hm=True,
                                   init_weights=True, pretrained='./data/ckpt/pose_hrnet_w48_256x192.pth', )
         self.hm_layer = nn.Conv2d(in_channels=48, out_channels=self.joint_num, kernel_size=1)
+        
+        # 可能可以用一個 MLP 最後再切分
         self.depth_layer_global = nn.Linear(2048, self.joint_num)
         # self.depth_layer = nn.Conv2d(in_channels=48, out_channels=self.joint_num, kernel_size=1)
         self.rho0_layer = nn.Linear(2048, 1)
@@ -36,6 +38,7 @@ class PersPose(nn.Module):
         self.leaf_rot_layer = nn.Linear(2048, 6*5)
         self.leaf_idxes = [22, 23, 10, 11, 15]
 
+        # 可能可以做多層的
         self.cam_layer = nn.Conv2d(2, 256, kernel_size=1, bias=False)
         nn.init.normal_(self.cam_layer.weight, mean=0, std=0.01)
 
@@ -48,7 +51,7 @@ class PersPose(nn.Module):
         # for param in self.backbone.parameters():
         #     param.requires_grad = not freeze
 
-    def inner(self, img, labels, flip=False):
+    def inner(self, img, labels, flip=False): 
         bs, _3, inp_h, inp_w = img.shape
         if flip:
             img = img.flip([-1])
@@ -57,14 +60,18 @@ class PersPose(nn.Module):
         v_index, u_index = torch.meshgrid(torch.arange(inp_h // 4, device=img.device),
                                           torch.arange(inp_w // 4, device=img.device), indexing='ij')
         uv1 = torch.stack([(u_index+0.5)*4,(v_index+0.5)*4,v_index*0+1], -1)  # 64,64,3
+        # PE module
         normed_uv = torch.inverse(labels['cam_intrinsics'])[:, None] @ uv1.reshape(1, -1, 3, 1)
         normed_uv = normed_uv[:, :, :2, 0].permute(0, 2, 1).reshape(-1, 2, inp_h // 4, inp_w // 4)
         valid_cam_intrinsics = [each != 'coco' for each in labels['dataset_name']]
         normed_uv = normed_uv * torch.tensor(valid_cam_intrinsics, device=img.device).reshape(-1, 1, 1, 1)
 
-        cam_info = self.cam_layer(normed_uv)
+        cam_info = self.cam_layer(normed_uv) # camara info embedding
+        # 
 
+        # backbone passes in image and camara info
         hrn_feat, global_feat = self.backbone(img, cam_info)  # bs,48,64,64  bs,2048
+        # backbone的 img cam_info 是相加 ，我們可以改成 gated fusion之類的
         hm = self.hm_layer(hrn_feat)  # bs,j_num,64,64
         hm = torch.softmax(hm.reshape(bs, self.joint_num, -1), dim=-1).reshape(hm.shape)
         v_index, u_index = torch.meshgrid(torch.arange(hm.shape[-2], device=hm.device),
@@ -74,6 +81,7 @@ class PersPose(nn.Module):
             (hm * u_index[None, None]).sum([-1, -2]), (hm * v_index[None, None]).sum([-1, -2])
         ], dim=-1)  # bs,j_num,2
 
+        # PR module
         # depth_map = self.depth_layer(hrn_feat).sigmoid()  # bs,j_num,64,64
         # depth = (hm * depth_map).sum(dim=[-1, -2]).unsqueeze(-1)  # bs,j_num,1
         depth = self.depth_layer_global(global_feat).sigmoid().unsqueeze(-1)

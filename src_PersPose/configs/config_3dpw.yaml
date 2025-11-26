@@ -9,10 +9,10 @@ weight_decay: 0.0005
 grad_clip_ts: 100.0
 ckpt_his_num: 10 #the number of latest ckpt files to save during training
 lr: 0.0003
-epochs: 100
+epochs: 1
 batch_size: 96
 batch_size_eval: 96
-num_workers: 4
+num_workers: 16
 
 # h36m_train, coco, hp3d, pw3d_train, bedlam_train, bedlam_val
 mix_ratio: [0.3, 0.4, 0.2, 0.1, 0., 0.]
